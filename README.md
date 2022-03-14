@@ -7,8 +7,11 @@ Metro Bike Share offers convenient round-the-clock access to a fleet of bicycles
 
 ### Tasks:  
 ●	Explore the data and present insights gained from exploratory analysis
+
 ●	Model bike sharing demand using linear regression, ARIMA, Neural Networks with variations
+
 ●	Perform model selection based on several scenarios
+
 ●	Predict hourly Bike Sharing Demand for next quarter (2021 Q4)                                       
 
 ### Data: 
