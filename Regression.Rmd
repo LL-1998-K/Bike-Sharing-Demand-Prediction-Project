@@ -1,0 +1,308 @@
+---
+title: '11'
+output: word_document
+---
+
+```{r}
+# Use package rio to import data into R directly from the web
+library(rio)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(forecast)
+library(nnet)
+library(tidyverse)
+url=c("https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2021/11/MetroBikeShare_2016_Q3_trips-2.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/metro-bike-share-trips-2016-q4.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2021/11/la_metro_gbfs_trips_Q1_2017-2.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/la_metro_gbfs_trips_Q2_2017.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2016/10/metro-bike-share-trips-2017-q3.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2018/02/metro-bike-share-trips-2017-q4-v2.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/metro-bike-share-trips-2018-q1.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/metro-bike-share-trips-2018-q2.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2018/10/metro-bike-share-trips-2018-q3.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2019/01/metro-bike-share-trips-2018-q4.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2019/04/metro-bike-share-trips-2019-q1.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2019/08/metro-bike-share-trips-2019-q2.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2019/10/metro-bike-share-trips-2019-q3-1.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2020/01/metro-bike-share-trips-2019-q4.csv.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2020/04/metro-bike-share-trips-2020-q1.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2021/03/metro-trips-2020-q2-v2.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2020/10/metro-trips-2020-q3.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2021/01/metro-trips-2020-q4.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2021/04/metro-trips-2021-q1-1.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2021/07/metro-trips-2021-q2.zip",
+      "https://11ka1d3b35pv1aah0c3m9ced-wpengine.netdna-ssl.com/wp-content/uploads/2021/10/metro-trips-2021-q3.zip"
+)
+
+# 2016 Q3
+head(import(url[1]),2)
+# 2016 Q4
+head(import(url[2]),2)
+# 2017 Q1
+head(import(url[3]),2)
+# 2017 Q2
+head(import(url[4]),2)
+# 2017 Q3
+head(import(url[5]),2)
+# 2017 Q4
+head(import(url[6]),2)
+# 2018 Q1
+head(import(url[7]),2)
+# 2018 Q2
+head(import(url[8]),2)
+# 2018 Q3
+head(import(url[9]),2)
+# 2018 Q4
+head(import(url[10]),2)
+# 2019 Q1
+head(import(url[11]),2)
+# 2019 Q2
+head(import(url[12]),2)
+# 2019 Q3
+head(import(url[13]),2)
+# 2019 Q4
+head(import(url[14]),2)
+# 2020 Q1
+head(import(url[15]),2)
+# 2020 Q2
+head(import(url[16]),2)
+# 2020 Q3
+head(import(url[17]),2)
+# 2020 Q4
+head(import(url[18]),2)
+# 2021 Q1
+head(import(url[19]),2)
+# 2021 Q2
+head(import(url[20], which=2),2)
+# 2021 Q3
+head(import(url[21], which=2),2)
+
+#loop
+data = import(url[1])
+#data$bike_type=NA
+str(data)
+
+data$start_time = mdy_hm(data$start_time)
+data$end_time = mdy_hm(data$end_time)
+str(data)
+
+FirstQuarterNames = names(data)
+
+for (i in 2:(length(url))){
+  print(i)
+  if (i<20){
+  quarter_i=import(url[i])}
+  else{  quarter_i=import(url[i],which=2)}
+  colnames(quarter_i)=FirstQuarterNames
+  if(i %in% c(2,4,6,7,8,9,10,11,12,14)){
+    quarter_i$start_time=ymd_hms(quarter_i$start_time)
+    quarter_i$end_time=ymd_hms(quarter_i$end_time)
+  }else{
+    quarter_i$start_time=mdy_hm(quarter_i$start_time)
+    quarter_i$end_time=mdy_hm(quarter_i$end_time)
+  }
+  common_cols <- intersect(colnames(quarter_i), FirstQuarterNames)
+  data=rbind(data[common_cols ], quarter_i[common_cols ])
+}
+
+
+
+summary(data)
+getwd()
+setwd("/Users/chris/Desktop")
+station=read.csv("metro-bike-share-stations-2021-10-01.csv")
+new=left_join(data,station,by=c('start_station_id'='ID'))
+head(new)
+
+full<-subset(new,select=-c(NAME,TIME))
+head(full,2)
+full$start_time=round.POSIXt(full$start_time,units = 'hours')
+dtla=full %>% filter(REGION=='DTLA'&ACTIVE=='Active')
+dtla<-subset(new,select=-c(ACTIVE))
+head(dtla)
+
+
+la=dtla %>% count(start_time)
+
+
+temp2=dtla %>%filter(passholder_type=='Monthly Pass') %>% count(start_time,passholder_type)
+names(temp2)[3]<-'monthly pass'
+temp2<-subset(temp2,select=c('start_time','monthly pass'))
+head(temp2)
+la=left_join(la,temp2,by='start_time')
+head(la)
+
+temp4=dtla %>%filter(passholder_type=='Walk-up') %>% count(start_time,passholder_type)
+names(temp4)[3]<-'Walk-up'
+temp4<-subset(temp4,select=c('start_time','Walk-up'))
+head(temp4)
+la=left_join(la,temp4,by='start_time')
+
+temp3=dtla %>%filter(passholder_type=='Flex pass') %>% count(start_time,passholder_type)
+names(temp3)[3]<-'flex pass'
+temp3<-subset(temp3,select=c('start_time','flex pass'))
+head(temp3)
+la=left_join(la,temp3,by='start_time')
+
+temp5=dtla %>%filter(passholder_type=='One Day Pass') %>% count(start_time,passholder_type)
+names(temp5)[3]<-'One Day Pass'
+temp5<-subset(temp5,select=c('start_time','One Day Pass'))
+head(temp5)
+la=left_join(la,temp5,by='start_time')
+
+temp6=dtla %>%filter(passholder_type=='Annual Pass') %>% count(start_time,passholder_type)
+names(temp6)[3]<-'Annual Pass'
+temp6<-subset(temp6,select=c('start_time','Annual Pass'))
+head(temp6)
+la=left_join(la,temp6,by='start_time')
+
+temp7=dtla %>%filter(passholder_type=='Testing') %>% count(start_time,passholder_type)
+names(temp7)[3]<-'Testing'
+temp7<-subset(temp7,select=c('start_time','Testing'))
+head(temp7)
+la=left_join(la,temp7,by='start_time')
+
+temp8=dtla %>%filter(passholder_type=='NULL') %>% count(start_time,passholder_type)
+names(temp8)[3]<-'NULL'
+temp8<-subset(temp8,select=c('start_time','NULL'))
+head(temp8)
+la=left_join(la,temp8,by='start_time')
+
+names(la)[2]<-'demand'
+
+tempa=dtla %>%filter(trip_route_category=='Round Trip') %>% count(start_time,trip_route_category)
+names(tempa)[3]<-'round trip'
+tempa<-subset(tempa,select=c('start_time','round trip'))
+head(tempa)
+la=left_join(la,tempa,by='start_time')
+
+tempb=dtla %>%filter(trip_route_category=='One Way') %>% count(start_time,trip_route_category)
+names(tempb)[3]<-'one way'
+tempb<-subset(tempb,select=c('start_time','one way'))
+head(tempb)
+la=left_join(la,tempb,by='start_time')
+
+
+la[is.na(la)]=0
+summary(la)
+
+la$month<-format(la$start_time,"%m")
+la$year<-format(la$start_time,"%y")
+la$day<-format(la$start_time,"%d")
+la$hour<-format(la$start_time,"%H")
+
+la$lagdemand1=lag(la$demand,1)
+la$lagdemand12=lag(la$demand,12)
+la$lagdemand24=lag(la$demand,24)
+la$lagdemandweek=lag(la$demand,24*7)  
+la$lagdemandmonth=lag(la$demand,24*30)
+la$lagdemand6month=lag(la$demand,24*30*6)
+la$lagdemandyear=lag(la$demand,24*265.25)
+
+
+la$trend=1:(dim(la)[1])
+
+summary(la)
+
+m1=lm(demand~trend+month+year+day+lagdemandyear+lagdemandmonth+lagdemandweek+lagdemand24+lagdemand1,data=la)
+summary(m1)
+
+m2=lm(demand~trend+month+year+lagdemandmonth+lagdemandweek+lagdemand24+lagdemand1,data=la)
+summary(m2)
+
+
+la$lagmpass1=lag(la$`monthly pass`,1)
+la$lagmpass24=lag(la$`monthly pass`,24)
+la$lagmpassweek=lag(la$`monthly pass`,24*7)  
+la$lagmpassmonth=lag(la$`monthly pass`,24*30)
+la$la$lagmpass6month=lag(la$`monthly pass`,24*30*6)
+lagmpassyear=lag(la$`monthly pass`,24*265.25)
+
+m3=lm(demand~trend+month+year+lagdemandmonth+lagdemandweek+lagdemand24+lagdemand1
+      +lagmpassmonth+lagmpass1+lagmpass24+lagmpassweek+lagmpassyear,data=la)
+summary(m3)
+
+m5=lm(demand~lagdemandmonth+lagdemandweek+lagdemand24+lagdemand1+trend+lagmpassmonth
+      +lagmpass1+lagmpass24+lagmpassyear,data=la)
+summary(m5)
+
+m8=lm(demand~lagdemandmonth+lagdemandweek+lagdemand24+lagdemand1+lagwalkweek,data=la)
+summary(m8)
+
+m9=lm(demand~lagdemandmonth+lagdemandweek+lagdemand24+lagdemand1+lagwalkweek+lagwalkmonth+lagmpassmonth+year,data=la)
+summary(m9)
+
+
+m4=lm(demand~lagdemandmonth+lagdemandweek+lagdemand24+lagdemand1
+      +lagmpass1+lagmpass24+lagmpassyear,data=la)
+summary(m4)
+
+la$lagwalk1=lag(la$`Walk-up`,1)
+la$lagwalk24=lag(la$`Walk-up`,24)
+la$lagwalkweek=lag(la$`Walk-up`,24*7)  
+la$lagwalkmonth=lag(la$`Walk-up`,24*30)
+la$lagwalkyeear=lag(la$`Walk-up`,24*265.25)
+
+m6=lm(demand~trend+month+year+day+lagdemandweek+lagdemand24+lagdemand1
+      +lagwalk1+lagwalk24+lagwalkweek+lagwalkmonth+lagmpass1+lagmpass24,data=la)
+summary(m6)
+m7=lm(demand~trend+month+year+day+lagdemandyear+lagdemandmonth+lagdemandweek+lagdemand24+lagdemand1
+      +lagwalk24+lagwalkmonth,data=la)
+summary(m7)
+
+
+la$lagrt1=lag(la$`round trip`,1)
+la$lagrt24=lag(la$`round trip`,24)
+la$lagrtweek=lag(la$`round trip`,24*7)  
+la$lagrtmonth=lag(la$`round trip`,24*30)
+la$lagrtyear=lag(la$`round trip`,24*265.25)
+
+
+m10=lm(demand~lagdemandmonth+lagdemandweek+lagdemand24+lagdemand1+lagwalkweek+lagwalkmonth+lagmpassmonth
+       +lagrt24+lagrtweek,data=la)
+summary(m10)
+
+la$lagow1=lag(la$`one way`,1)
+la$lagow24=lag(la$`one way`,24)
+la$lagowweek=lag(la$`one way`,24*7)  
+la$lagowmonth=lag(la$`one way`,24*30)
+la$lagowyear=lag(la$`one way`,24*265.25)
+
+m11=lm(demand~+lagdemand24+lagdemand1+lagwalkweek+lagwalkmonth+lagmpassmonth+year+lagdemand12+hour
+       +lagow24+lagowweek+trend+day+month,data=la)
+summary(m11)
+mean(m11$residuals^2)^(1/2)
+
+
+la_train=la %>% filter(start_time<='2021-06-30')
+la_test=la %>% filter(start_time>'2021-06-30')
+summary(la_train)
+
+m12=lm(demand~lagdemand24+lagdemand1+lagwalkweek+lagwalkmonth+lagmpassmonth
+      +lagow24+lagowweek+trend+day+month+year,data=la)
+summary(m12)
+
+str(la)
+
+
+la_train=la %>% filter(start_time<='2021-06-30')
+la_test=la %>% filter(start_time>'2021-06-30')
+m13=lm(demand~+lagdemand24+lagdemand1+lagwalkweek+lagwalkmonth+lagmpassmonth+year+lagdemand12+hour
+       +lagow24+lagowweek+trend+day+month,data=la_train)
+summary(m13)
+mean(m13$residuals^2)^(1/2)
+
+la_test$predict=predict(m13,newdata = la_test)
+sqrt(mean((la_test$demand-la_test$predict)^2))
+
+summary(la_test$start_time)
+
+library(Metrics)
+rmse(la_test$demand,la_test$predict)
+
+
+
+
+```
+
